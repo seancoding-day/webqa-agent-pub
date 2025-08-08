@@ -357,13 +357,17 @@ async def execute_single_case(state: MainGraphState) -> dict:
 
     # Conditionally reset the session based on the test case flag
     if case.get("reset_session", False):
-        logging.info(f"Resetting session: Checking if navigation to {case.get('url')} is needed.")
+        logging.info(f"Resetting session: navigation to {case.get('url')}.")
         await ui_tester_instance.start_session(case.get("url"))
         page = await ui_tester_instance.get_current_page()
         action_handler = ActionHandler()
         await action_handler.go_to_page(page, state["url"], cookies=state["cookies"])
         logging.info("Navigation was performed as part of session reset.")
     else:
+        await ui_tester_instance.start_session(case.get("url"))
+        page = await ui_tester_instance.get_current_page()
+        action_handler = ActionHandler()
+        await action_handler.go_to_page(page, state["url"], cookies=state["cookies"])
         logging.info("Continuing with the existing session state.")
 
     # Invoke the agent worker for the single case
