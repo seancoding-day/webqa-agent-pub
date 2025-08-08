@@ -78,10 +78,11 @@ class LLMAPI:
             logging.error(f"Error while handling images for OpenAI: {e}")
             raise ValueError(f"Failed to process images for OpenAI. Error: {e}")
 
-    async def _call_openai(self, messages, temperature=None):
+    async def _call_openai(self, messages, temperature=None, top_p=None):
         try:
             completion = await self.client.chat.completions.create(
-                model=self.llm_config.get("model"), messages=messages, timeout=60, temperature=temperature if temperature is not None else 0.0
+                model=self.llm_config.get("model"), messages=messages, timeout=60, temperature=temperature if temperature is not None else 1,
+                top_p=top_p if top_p is not None else 0.1
             )
             content = completion.choices[0].message.content
             # Clean response if it's wrapped in JSON code blocks
